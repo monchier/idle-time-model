@@ -1,12 +1,9 @@
 import streamlit as st
 import json
 from dateutil.parser import parse
-import pandas as pd
 
 @st.cache
 def load_data():
-    df = pd.read_json("data.json")
-    st.write(df)
     data = []
     with open("data.json", "r") as f:
         for line in f.readlines():
