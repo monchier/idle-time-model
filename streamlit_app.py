@@ -1,9 +1,12 @@
 import streamlit as st
 import json
 from dateutil.parser import parse
+import pandas as pd
 
 @st.cache
 def load_data():
+    df = pd.read_json("data.json")
+    st.write(df)
     data = []
     with open("data.json", "r") as f:
         for line in f.readlines():
@@ -55,6 +58,6 @@ for e in spin_downs:
         hours_saved += sum(e)
 
 st.write("Total number of hours saved", hours_saved)
-st.write("Total number of hours saved %", 100 * hours_saved / (len(idle_times) * 30 * 24))
+st.write("(WIP) Total number of hours saved %", 100 * hours_saved / (1500 * 30 * 24))
 
 
