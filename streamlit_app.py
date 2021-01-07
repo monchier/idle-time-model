@@ -55,9 +55,17 @@ idle_times = get_idle_times()
 days = 31
 
 st.title("Spin Down Simulation")
-st.write("Enter a period: that is the number of days after which we turn off and app.")
+st.markdown("This app simulates a spin down algoritm where apps are shut down after a period since the last access. The data used by this app"
+"are derived from our segment database `identify` table. We aggregate this table to obtain the time series of the app reloads for each app."
+"This information is used to compute when an app can be shut down after a configurable `period` of inactivity. The time remaining after"
+"the shutdown is considered 'saved' and accounts towards the dollars saved")
+st.markdown("We assume that all apps are active for the whole month. This is conservative, since some apps may not be active at all during the nonth and some apps may be started later in a month. We assume apps do not get deleted (this can be a source of inaccuracy). We also assume"
+"that the baseline system has all nodes to accomodate all apps. This can be also a source of inaccuracy since apps actually trickle in the "
+"system during the month.")
+
+
+st.write("Enter a period: that is the number of days after which we turn off an app.")
 period = st.slider("Period (days)", 0, days, 7) * 24
-st.write("This app simulates a spin down algoritm where apps are shut down after a period since the last access. The number of hours saved is the remaining time before a new access.")
 
 # Total idle time
 #for e in [sum(x) for x in idle_times]:
@@ -88,7 +96,8 @@ app_per_core = 1
 
 machines = total_apps / app_per_core / 32
 
-st.write("Number of 32-core nodes:", machines)
+st.write("Number of apps:", len(idle_times))
+st.write("Number of 32-core nodes in the baseline system:", machines)
 
 total_number_of_cores = 32 * machines
 
@@ -98,37 +107,18 @@ core_hours_saved = hours_saved / app_per_core
 
 cost_of_a_core_per_hour = 740 / 32 / days / 24
 
-st.write("Cost of a core hour [$]: ", cost_of_a_core_per_hour)
+st.write("Cost of a core for a month [$]: ", cost_of_a_core_per_hour * days * 24)
 
 monthly_cost = cost_of_a_core_per_hour * total_core_hours
 
-st.write("Baseline cost [$]:", monthly_cost)
+st.write("Baseline cost of the cluser [$]:", monthly_cost)
 
-st.write("Total number of hours saveds:", hours_saved)
+st.write("Total number of core-hours saved:", hours_saved)
 st.write("Total dollars saved:", hours_saved * cost_of_a_core_per_hour)
 
 core_hours_per_month = days * 24 / app_per_core
 
-st.write("Aapps:", len(idle_times))
+savings = hours_saved * cost_of_a_core_per_hour
 
-new_cost = monthly_cost - hours_saved * cost_of_a_core_per_hour
-
-st.write("Cost with savings [$]:", new_cost)
-
-st.write("Cost reduction [%]",  100 * (monthly_cost - new_cost) / monthly_cost)
-#st.write("(WIP) Total number of hours saved (assuming 1500 apps for the whole month) [%]:", 100 * hours_saved / (total_apps * days * 24))
-
-periods = [1, 2, 3, 7, 14, 21, 31]
-
-hs = ((p, get_hours_saved(p)) for p in periods)
-
-df = pd.DataFrame(hs, columns=["period", "data"])
-#st.write(df)
-
-# st.write("This is the chart of the hours saved with a variable period")
-# chart = alt.Chart(df).mark_bar().encode(
-#     x = "period:N",
-#     y = "data:Q"
-# )
-# st.altair_chart(chart)
+st.write("Cost reduction [%]",  100 * savings / monthly_cost)
 
