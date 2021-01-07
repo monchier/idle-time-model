@@ -78,7 +78,7 @@ def get_hours_saved(period):
 
 hours_saved = get_hours_saved(period)
 
-st.write("Total number of hours saved:", hours_saved)
+st.write("Total number of hours saved for all apps that are active at least once in the month:", hours_saved)
 st.write("(WIP) Total number of hours saved (assuming 1500 apps for the whole month) [%]:", 100 * hours_saved / (1500 * 30 * 24))
 
 periods = [1, 2, 3, 7, 14, 21, 30]
